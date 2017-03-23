@@ -41,11 +41,17 @@ class PostgresWriter(object):
             to refactor one day.
             """
             t = lambda v: not v == None
-            default = (' DEFAULT %s' % QuotedString(column['default']).getquoted()) if t(column['default']) else None
+            try:
+                default = (' DEFAULT %s' % QuotedString(column['default']).getquoted()) if t(column['default']) else None
+            except:
+                default = None
 
             if column['type'] == 'char':
                 default = ('%s::char' % default) if t(default) else None
                 return default, 'character(%s)' % column['length']
+            elif column['type'] == 'binary(1)':
+                default = ('%s::character varying' % default) if t(default) else None
+                return default, 'bytea'
             elif column['type'] == 'varchar':
                 default = ('%s::character varying' % default) if t(default) else None
                 return default, 'character varying(%s)' % column['length']

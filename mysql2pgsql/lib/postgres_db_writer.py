@@ -151,6 +151,8 @@ class PostgresDbWriter(PostgresWriter):
         """
         table_sql, serial_key_sql = super(PostgresDbWriter, self).write_table(table)
         for sql in serial_key_sql + table_sql:
+            if not sql:
+                continue
             self.execute(sql)
 
     @status_logger
